@@ -26,23 +26,51 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _name = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tempo agora"),
+        title: Text("Tempo Agora"),
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(
+                    hintText: "Insira o endereço",
+                    labelText: "Insira o endereço"
+                ),
+                controller: _name,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Insira o nome da pessoa';
+                  }
+                  return null;
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: RaisedButton(
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) {
+
+                    }
+                  },
+                  child: Text('Buscar'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
 }
