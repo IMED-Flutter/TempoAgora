@@ -31,6 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _name = TextEditingController();
+  ResponseService response;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller: _name,
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'Insira o nome da pessoa';
+                    return 'Insira o endereço desejado';
                   }
                   return null;
                 },
@@ -63,12 +64,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: RaisedButton(
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
-
+                      getAddress(_name.text);
                     }
                   },
                   child: Text('Buscar'),
                 ),
               ),
+              response != null ?
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Descrição: ${response.wx_desc}"),
+                  Text("Temperatura: ${response.temp_c}Cº"),
+                  Text("Sensação Térmica: ${response.feelslike_c}Cº"),
+                  Text("Humidade: ${response.humid_pct}")
+                ],
+              ) : Text("Nenhuma busca realizada!!!")
             ],
           ),
         ),
@@ -80,7 +91,11 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Placemark> listPlacemarks = await Geolocator().placemarkFromAddress(address);
 
     Position position = listPlacemarks[0].position;
-    ResponseService response = await getInfoWeather(position.latitude, position.longitude);
+    ResponseService responseNow = await getInfoWeather(position.latitude, position.longitude);
+
+    setState(() {
+      response = responseNow;
+    });
   }
 
 
