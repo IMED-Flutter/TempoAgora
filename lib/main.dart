@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_consulta_tempo/endpoints.dart';
+import 'package:flutter_app_consulta_tempo/responseService.dart';
+import 'package:geolocator/geolocator.dart';
 
 void main() {
   runApp(MyApp());
@@ -72,5 +75,14 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  getAddress(String address) async {
+    List<Placemark> listPlacemarks = await Geolocator().placemarkFromAddress(address);
+
+    Position position = listPlacemarks[0].position;
+    ResponseService response = await getInfoWeather(position.latitude, position.longitude);
+  }
+
+
 
 }
