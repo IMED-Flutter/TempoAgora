@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_consulta_tempo/endpoints.dart';
 import 'package:flutter_app_consulta_tempo/responseService.dart';
+import 'package:flutter_app_consulta_tempo/retrofit/firstUseRetrofit.dart';
 import 'package:geolocator/geolocator.dart';
 
 void main() {
@@ -31,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _name = TextEditingController();
-  ResponseService response;
+  Weather weather;
 
   @override
   Widget build(BuildContext context) {
@@ -70,14 +72,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text('Buscar'),
                 ),
               ),
-              response != null ?
+              weather != null ?
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Descrição: ${response.wx_desc}"),
-                  Text("Temperatura: ${response.temp_c}Cº"),
-                  Text("Sensação Térmica: ${response.feelslike_c}Cº"),
-                  Text("Humidade: ${response.humid_pct}")
+                  Text("Descrição: ${weather.wx_desc}"),
+                  Text("Temperatura: ${weather.temp_c}Cº"),
+                  Text("Sensação Térmica: ${weather.feelslike_c}Cº"),
+                  Text("Humidade: ${weather.humid_pct}")
                 ],
               ) : Text("Nenhuma busca realizada!!!")
             ],
@@ -91,13 +93,18 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Placemark> listPlacemarks = await Geolocator().placemarkFromAddress(address);
 
     Position position = listPlacemarks[0].position;
-    ResponseService responseNow = await getInfoWeather(position.latitude, position.longitude);
+    //ResponseService responseNow = await getInfoWeather(position.latitude, position.longitude);
+    final dio = Dio();   // Provide a dio instance
+    final client = RestClient(dio);
+
+    final Weather weatherNow = await client.getTasks(
+        "${position.latitude},${position.longitude}",
+        "2e2e739a",
+        "6101cec4ad2978185a10d906ae03a9da");
 
     setState(() {
-      response = responseNow;
+      weather = weatherNow;
     });
   }
-
-
 
 }
